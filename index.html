@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Калькулятор стоимости</title>
+  <style>
+    body {
+      background-color: #F5F5F5;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #000;
+    }
+
+    .calculator {
+      background-color: #FFF;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      width: 500px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    label, input, button {
+      font-size: 18px;
+      margin: 10px 0;
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .product-images {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);  
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .product-image {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.3s, border 0.3s;
+    }
+
+    .product-image:hover {
+      transform: scale(1.1);
+    }
+
+    .product-item {
+      text-align: center;
+    }
+
+    .selected {
+      border: 3px solid #FF8C00;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .options-container, .property-container {
+      display: none;
+    }
+
+    .service-type-container {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    .service-type-container label {
+      margin-right: 10px;
+    }
+
+    .service-type-container input {
+      margin-left: 5px;
+    }
+    
+
+  </style>
+</head>
+<body>
+
+  <div class="calculator">
+    <h1>Калькулятор стоимости заказа</h1>
+
+    <label for="quantity">Количество товара:</label>
+    <input type="number" id="quantity" min="1" value="1">
+    <label for="service-type">Тип услуги:</label>
+    <div class="service-type-container">
+      <label for="service-type-1">Самовывоз</label>
+      <input type="radio" name="service-type" id="service-type-1" value="1" checked>
+      <label for="service-type-2">Доставка</label>
+      <input type="radio" name="service-type" id="service-type-2" value="2">
+      <label for="service-type-3">Покупка оптом</label>
+      <input type="radio" name="service-type" id="service-type-3" value="3">
+    </div>
+
+    <label for="product">Выберите товар:</label>
+
+    <div class="product-images">
+      <!-- Мармелад -->
+      <div class="product-item">
+        <img src="https://cm.samokat.ru/processed/l/product_card/5304aac8-3a56-4b2e-ba1f-579b30fc2c4f.jpg" width="100" alt="Мармелад" class="product-image" id="marmalade" data-price="65" onclick="selectProduct('marmalade', 65)">
+        <div class="product-name">Мармелад</div>
+        <div class="product-price">65 руб</div>
+      </div>
+
+      <!-- Драже -->
+      <div class="product-item">
+        <img src="https://cm.samokat.ru/processed/l/product_card/405a8ac0-0a8a-44e4-bcc9-d8e80e328e80.jpg" width="100" alt="Драже" class="product-image" id="candies" data-price="90" onclick="selectProduct('candies', 90)">
+        <div class="product-name">Драже</div>
+        <div class="product-price">90 руб</div>
+      </div>
+
+      <!-- Вафли -->
+      <div class="product-item">
+        <img src="https://cm.samokat.ru/processed/l/product_card/2ba6e844-539f-49a9-87eb-439ace9a1606.jpg" width="100" alt="Вафли" class="product-image" id="wafer" data-price="120" onclick="selectProduct('wafer', 120)">
+        <div class="product-name">Вафли</div>
+        <div class="product-price">120 руб</div>
+      </div>
+    </div>
+
+    <div class="options-container">
+      <label for="product-options">Выберите опцию:</label>
+      <select id="product-options">
+        <option value="5">Доставка по городу</option>
+        <option value="10">Доставка за город</option>
+      </select>
+    </div>
+    <div id="result" class="result"></div>
+  </div>
+
+  <script>
+    let selectedProduct = '';
+    let productPrice = 0;
+    let serviceType = 1;
+    let selectedOptionPrice = 0;
+    let selectedPropertyPrice = 0;
+
+    function selectProduct(productId, price) {
+      const images = document.querySelectorAll('.product-image');
+      images.forEach(img => img.classList.remove('selected'));
+      const selectedImg = document.getElementById(productId);
+      selectedImg.classList.add('selected');
+
+      selectedProduct = productId;
+      productPrice = price;
+      updatePrice();
+    }
+
+    function updateOptionsAndProperties() {
+      const optionsContainer = document.querySelector('.options-container');
+      const propertyContainer = document.querySelector('.property-container');
+
+      if (serviceType === 1) {
+        optionsContainer.style.display = 'none';
+        propertyContainer.style.display = 'none';
+      } else if (serviceType === 2) {
+        optionsContainer.style.display = 'block';
+        propertyContainer.style.display = 'none';
+      } else if (serviceType === 3) {
+        optionsContainer.style.display = 'none';
+        propertyContainer.style.display = 'block';
+      }
+    }
+
+    function updatePrice() {
+      const quantity = document.getElementById('quantity').value;
+      let totalPrice = (productPrice + selectedOptionPrice + selectedPropertyPrice) * quantity;
+      if (serviceType === 3 && quantity < 30) {
+        alert('Для типа услуги 3 количество товара должно быть не менее 30 штук!');
+        return;
+      }
+
+      if (serviceType === 3 && quantity >= 30) {
+        const discountPrice = totalPrice * 0.8;  // 20% скидка
+        document.getElementById('result').innerHTML = `
+          Общая стоимость: ${totalPrice} руб.<br>
+          Стоимость со скидкой (20%): ${discountPrice.toFixed(2)} руб.
+        `;
+      } else {
+        document.getElementById('result').textContent = `Общая стоимость: ${totalPrice} руб.`;
+      }
+    }
+
+    document.querySelectorAll('input[name="service-type"]').forEach(radio => {
+      radio.addEventListener('change', function () {
+        serviceType = parseInt(this.value);
+        updateOptionsAndProperties();
+        updatePrice();  // Пересчитываем цену при изменении типа услуги
+      });
+    });
+
+    document.getElementById('product-options').addEventListener('change', function () {
+      selectedOptionPrice = parseInt(this.value);
+      updatePrice();  // Обновляем цену при выборе опции
+    });
+
+    document.getElementById('product-property').addEventListener('change', function () {
+      selectedPropertyPrice = this.checked ? 15 : 0;
+      updatePrice();  // Обновляем цену при изменении свойства
+    });
+
+    updateOptionsAndProperties();
+  </script>
+
+</body>
+</html>
